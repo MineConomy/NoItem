@@ -1,0 +1,31 @@
+# #
+# #########################
+# # PERFORMANCE IMPROVING #
+# ### Events & Actions    #
+# #########################
+# # Touch "Events" only if you know what are you doing, if something
+# # doesn't work enable all these features (true).
+# # WARNING: CraftItem and InventoryClick events must be enabled at the same time
+# # to have anyone of them working.
+#
+WorldsDisabled: []
+Actions:
+  CookControl: false
+  BrewControl: true
+Events:
+  PlayerDropItem: true
+  PlayerPickupItem: true
+  PayerItemHeld: true
+  PlayerInteract: true
+  PlayerInteractEntity: true
+  BlockBreak: true
+  BlockDispense: true
+  BlockPlace: true
+  InventoryClick: true
+  CraftItem: true
+  PlayerDeath: true
+  PlayerRespawn: true
+  ItemEnchant: true
+  EntityDamageByEntity: true
+  PlayerShearEntity: true
+  PrepareItemEnchant: true

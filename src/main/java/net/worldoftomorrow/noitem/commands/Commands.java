@@ -16,9 +16,13 @@ public class Commands {
 		if(!canRunCommand(sender, Perm.CMD_RELOAD)) {
 			sender.sendMessage(ChatColor.RED + "You are not allowed to run that command.");
 		} else {
+			sender.sendMessage(ChatColor.AQUA + "Reloading config...");
+			sender.getEffectivePermissions();
 			NoItem.getInstance().reloadConfig();
 			NoItem.getPermsManager().pawl = NoItem.getInstance().getConfig().getBoolean("PermsAsWhiteList");
 			new VaultHook();
+			sender.sendMessage(ChatColor.AQUA + "Reloading events...");
+			NoItem.getListener().listenersReload();
 			sender.sendMessage(ChatColor.AQUA + "Configuration reloaded.");
 		}
 	}
@@ -42,7 +46,7 @@ public class Commands {
 	}
 	
 	private static boolean canRunCommand(CommandSender sender, String perm) {
-		if(!(sender instanceof Player) || !Util.playerHasPerm((Player) sender, perm))
+		if(!(sender instanceof Player) || !Util.playerHasPerm((Player) sender, perm) || sender.isOp())
 			return true;
 		else 
 			return false;

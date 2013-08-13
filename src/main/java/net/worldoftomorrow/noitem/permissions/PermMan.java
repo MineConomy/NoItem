@@ -1,7 +1,7 @@
 package net.worldoftomorrow.noitem.permissions;
 
 import net.worldoftomorrow.noitem.Config;
-import net.worldoftomorrow.noitem.util.Messenger;
+//import net.worldoftomorrow.noitem.util.Messenger;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -11,18 +11,20 @@ import org.bukkit.inventory.ItemStack;
 public class PermMan {
 	
 	private static final char PS = '.';
+	//private static HashMap<Player,HashMap<String, Boolean>> NoItemPlayerPermsCache = new HashMap<Player,HashMap<String, Boolean>>();
 	public boolean pawl = Config.getBoolean("PermsAsWhiteList");
-	
+
 	// Permission with no variable do not apply to PermsAsWhitelist and
 	// therefore are not checked against it
 	public boolean has(Player p, String perm) {
+		//NoItemPlayerPermsCache.
 		if(perm == null) return pawl;
 		return p.hasPermission(perm);
 	}
 	
 	public boolean has(Player p, String perm, ItemStack item) {
 		boolean has = check(p, construct(perm, item));
-		// Is PermsAsWhiteList is true, return the opposite value.
+		// If PermsAsWhiteList is true, return the opposite value.
 		return pawl ? !has : has;
 	}
 	
@@ -55,12 +57,13 @@ public class PermMan {
 	 * @return
 	 */
 	//
+	// BASARSE EN VAULT Y QUITAR EL CHECK?
 	private boolean check(Player p, String[] perms) {
 		if(p.isOp() || p.hasPermission("noitem.*")) return pawl;
-		for(int i = 0; i <= 3; i++) {
-			if(perms[i] == null) continue;
-			if(permSetFalse(p, perms[i])) return false;
-		}
+		
+		if(perms[0] != null)
+			if(permSetFalse(p, perms[0])) return false;
+
 		for(String perm : perms) {
 			if(perm == null) continue;
 			if(p.hasPermission(perm)) return true;
@@ -84,6 +87,7 @@ public class PermMan {
 	
 	// Constructs an array of permissions with parents added
 	private String[] construct(String perm, Object o) {
+		// LINEA QUITABLE LO MAS SEGURO
 		if(perm.equals(Perm.ADMIN)
 				|| perm.equals(Perm.ALLITEMS)
 				|| perm.equals(Perm.CMD_CHECK)
@@ -92,33 +96,41 @@ public class PermMan {
 			throw new UnsupportedOperationException("Incorrect checking of permission: " + perm);
 		}
 		int id;
-		String name;
+		//String name;
 		short data;
 
 		if(o instanceof ItemStack) {
 			ItemStack stack = (ItemStack) o;
 			id = stack.getTypeId();
-			name = Messenger.getStackName(stack);
+			//name = Messenger.getStackName(stack);
 			data = stack.getDurability();
 		} else if (o instanceof Block) {
 			Block b = (Block) o;
 			id = b.getTypeId();
-			name = Messenger.getBlockName(b);
+			//name = Messenger.getBlockName(b);
 			data = b.getData();
 		} else if (o instanceof Entity) {
-			Entity e = (Entity) o;
-			name = Messenger.getEntityName(e);
-			id = -1;
+			//Entity e = (Entity) o;
+			//name = Messenger.getEntityName(e);
+			id = ((Entity) o).getEntityId();
 			data = -1;
 		} else if (o instanceof Integer) {
-			name = o.toString();
 			id = -1;
 			data = -1;
 		} else {
 			throw new UnsupportedOperationException("Unknown object type: " + o.getClass().getSimpleName());
 		}
 		
-		String[] perms = new String[7];
+		String[] perms = new String[4];
+		if(id != -1 && data != -1) {
+			perms[0] = perm + id + PS + data; // Standard number
+			perms[1] = perm + id + PS + "*"; // ID, all data
+			perms[2] = perm + "*" + data;
+			perms[3] = perm + "*"; // Entire feature
+		} else {
+			perms[0] = perm + id; // Standard permission 
+		}
+		/*String[] perms = new String[7];
 		if(id != -1 && data != -1) {
 			perms[0] = perm + name + PS + data; // Standard name
 			perms[1] = perm + id + PS + data; // Standard number
@@ -133,7 +145,7 @@ public class PermMan {
 		} else {
 			perms[0] = perm + name; // Standard permission 
 		}
-		
+		*/
 		return perms;
 	}	
 }
