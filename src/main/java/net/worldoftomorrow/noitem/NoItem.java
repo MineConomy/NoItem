@@ -14,9 +14,7 @@ import net.worldoftomorrow.noitem.lists.Lists;
 import net.worldoftomorrow.noitem.permissions.PermMan;
 import net.worldoftomorrow.noitem.permissions.VaultHook;
 import net.worldoftomorrow.noitem.util.Metrics;
-import net.worldoftomorrow.noitem.util.Updater;
 
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class NoItem extends JavaPlugin {
@@ -25,18 +23,21 @@ public class NoItem extends JavaPlugin {
 	private static PermMan permsManager;
 	private static Config config;
 	private static Lists lists;
+	private static Listeners listener;
 	
 	@Override
 	public void onEnable() {
 		setupStatic(this);
 		this.getCommand("noitem").setExecutor(new CmdNoItem());
-		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents(new Listeners(), this);
-		if(Config.getBoolean("Auto-Download-Updates")) {
-			new Updater(this, this.getFile(), Updater.UpdateType.DEFAULT, true);
-		} else if(Config.getBoolean("CheckForUpdates")) {
-			new Updater(this, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, true);
-		}
+		//PluginManager pm = getServer().getPluginManager();
+		//pm.registerEvents(new Listeners(), this);
+		//new Listeners(this);
+		//////listener = new Listeners(this);
+//		if(Config.getBoolean("Auto-Download-Updates")) {
+//			new Updater(this, this.getFile(), Updater.UpdateType.DEFAULT, true);
+//		} else if(Config.getBoolean("CheckForUpdates")) {
+//			new Updater(this, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, true);
+//		}
 		new VaultHook();
 		try {
 			if(!new Metrics(this).start()) {
@@ -71,10 +72,15 @@ public class NoItem extends JavaPlugin {
 		return config;
 	}
 	
+	public static Listeners getListener() {
+		return listener;
+	}
+	
 	private static void setupStatic(NoItem instance) {
 		NoItem.instance = instance;
 		NoItem.config = new Config();
 		NoItem.permsManager = new PermMan();
 		NoItem.lists = new Lists();
+		NoItem.listener = new Listeners();
 	}
 }

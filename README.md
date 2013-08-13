@@ -33,6 +33,7 @@ is great however for Role-Playing servers though. Say you only want miners to be
 - noitem.noenchant.&lt;itemID&gt;
 
 ## Deleted item tables, now only accepting item IDs ##
+# Added multiple performance improving tweaks #
 =======
 NoItem-Dev
 ==========
