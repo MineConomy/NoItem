@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.server.v1_6_R2.Item;
-import net.minecraft.server.v1_6_R2.RecipesFurnace;
-import net.minecraft.server.v1_6_R2.TileEntityFurnace;
+//import net.minecraft.server.v1_6_R2.Item;
+//import net.minecraft.server.v1_6_R2.RecipesFurnace;
+//import net.minecraft.server.v1_6_R2.TileEntityFurnace;
 import net.worldoftomorrow.noitem.NoItem;
 import net.worldoftomorrow.noitem.permissions.Perm;
 import net.worldoftomorrow.noitem.util.Util;
@@ -17,8 +17,9 @@ import net.worldoftomorrow.noitem.util.Messenger.AlertType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
+//import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -335,7 +336,7 @@ public final class Handlers {
 			ItemStack item = view.getItem(slot);
 			
 			// If it is not the ing. slot and the cursor is a potion
-			if (slot < 3 && slot >= 0 && item.getTypeId() == Item.POTION.id) {
+			if (slot < 3 && slot >= 0 && item.getType() == Material.POTION) {
 				if(NoItem.getPermsManager().has(p,Perm.BREW, item)) {
 					event.setCancelled(true);
 					Messenger.sendMessage(p, AlertType.BREW, item);
@@ -533,7 +534,7 @@ public final class Handlers {
 				}
 			// Uncooked Item slot
 			} else if (slot == 0) {
-				if(fuel.getTypeId() != 0 && cursor.getTypeId() != 0 && isCookable(cursor)) {
+				if(fuel.getTypeId() != 0 && cursor.getTypeId() != 0) {
 					if(NoItem.getPermsManager().has(p, Perm.COOK, cursor)) {
 						event.setCancelled(true);
 						Messenger.sendMessage(p, AlertType.COOK, cursor);
@@ -543,17 +544,18 @@ public final class Handlers {
 			// Shift clicking anywhere else in the inventory
 			} else if(slot > 3 && st != SlotType.OUTSIDE && event.isShiftClick()) {
 				if(current.getTypeId() != 0) {
-					if(fuel.getTypeId() != 0 && isCookable(current)) {
-						if(NoItem.getPermsManager().has(p, Perm.COOK, current)) {
-							event.setCancelled(true);
-							Messenger.sendMessage(p, AlertType.COOK, current);
-							Messenger.alertAdmins(p, AlertType.COOK, current);
-						}
-					} else if (cookable.getTypeId() != 0 && isFuel(current)) {
+					if (cookable.getTypeId() != 0 && isFuel(current)) {
 						if(NoItem.getPermsManager().has(p, Perm.COOK, cookable)) {
 							event.setCancelled(true);
 							Messenger.sendMessage(p, AlertType.COOK, cookable);
 							Messenger.alertAdmins(p, AlertType.COOK, cookable);
+						}
+					}
+					else if(fuel.getTypeId() != 0) {
+						if(NoItem.getPermsManager().has(p, Perm.COOK, current)) {
+							event.setCancelled(true);
+							Messenger.sendMessage(p, AlertType.COOK, current);
+							Messenger.alertAdmins(p, AlertType.COOK, current);
 						}
 					}
 				}
@@ -691,15 +693,17 @@ public final class Handlers {
 	
 	private static boolean isFuel(ItemStack item) {
 		// Create an NMS item stack
-		net.minecraft.server.v1_6_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+//		net.minecraft.server.v1_6_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
 		// Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
-		return TileEntityFurnace.isFuel(nmss);
+//		return TileEntityFurnace.isFuel(nmss);
+		Material type = item.getType();
+		return type == Material.COAL || type == Material.LAVA_BUCKET || type == Material.WOOD || type == Material.LOG;
 	}
 	
-	private static boolean isCookable(ItemStack item) {
-		net.minecraft.server.v1_6_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
-		// If the result of that item being cooked is null, it is not cookable
-		return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;
-	}
+//	private static boolean isCookable(ItemStack item) {
+//		net.minecraft.server.v1_6_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+//		// If the result of that item being cooked is null, it is not cookable
+//		return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;
+//	}
 	// End - Helper Methods //
 }
